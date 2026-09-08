@@ -1,0 +1,37 @@
+{
+  "appId": "com.school.educationalbrowser",
+  "productName": "Classroom Educational Browser",
+  "directories": {
+    "output": "dist"
+  },
+  "files": [
+    "build/**/*",
+    "index.html",
+    "home.html",
+    "assets/**/*",
+    "package.json",
+    ".env"
+  ],
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": ["x64"]
+      },
+      {
+        "target": "portable",
+        "arch": ["x64"]
+      }
+    ],
+    "icon": "assets/icons/win/icon.ico"
+  },
+  "nsis": {
+    "oneClick": true,
+    "perMachine": false,
+    "allowToChangeInstallationDirectory": false,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "shortcutName": "Classroom Educational Browser",
+    "runAfterFinish": true
+  }
+}
