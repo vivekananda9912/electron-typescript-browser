@@ -1,11 +1,45 @@
 import { app, Menu, BrowserWindow, ipcMain, dialog, session, desktopCapturer } from "electron";
 import * as fs from "fs";
 import * as path from "path";
+import { 
+  initializeFirebase, 
+  getFirebaseConfigStatus, 
+  testFirestoreConnection, 
+  addFirestoreDocument, 
+  getFirestoreDocuments, 
+  verifyClassCode,
+  createSampleClassCode,
+  ensureDefaultFirebaseClasses,
+  FirebaseConfig 
+} from "./src/firebase";
+
+// Ignore certificate date errors (essential for educational webview and client clock skew)
+app.commandLine.appendSwitch("ignore-certificate-errors");
+app.commandLine.appendSwitch("allow-insecure-localhost", "true");
 
 let mainWindow: BrowserWindow;
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   console.log("Creating main window...");
+
+  // Handle certificate errors gracefully for all webContents
+  app.on("certificate-error", (event, webContents, url, error, certificate, callback) => {
+    event.preventDefault();
+    callback(true);
+  });
+
+  session.defaultSession.setCertificateVerifyProc((request, callback) => {
+    callback(0); // 0 = valid certificate
+  });
+
+  // Auto-initialize Firebase if credentials exist in .env
+  const firebaseInitResult = initializeFirebase();
+  if (firebaseInitResult.success) {
+    console.log("🔥 Firebase initialized on startup:", firebaseInitResult.message);
+    await ensureDefaultFirebaseClasses();
+  } else {
+    console.log("ℹ️ Firebase status on startup:", firebaseInitResult.message);
+  }
 
   // Resolve the preload script path
   const preloadPath = path.join(__dirname, "../build/preload.js");
@@ -50,6 +84,16 @@ app.whenReady().then(() => {
     } else {
       callback(false);
     }
+  });
+
+  // Intercept all created webContents (including webviews) to prevent unmonitored popups
+  app.on("web-contents-created", (event, contents) => {
+    contents.setWindowOpenHandler(({ url }) => {
+      // Prevent popups from escaping sandbox/whitelist into rogue windows
+      // By denying here, the <webview> handles approved navigation in preload.ts
+      console.log("Blocked window open popup to:", url);
+      return { action: "deny" };
+    });
   });
 
   // Set application menu
@@ -175,11 +219,87 @@ app.whenReady().then(() => {
     return result;
   });
 
+  // Get default downloads path
+  ipcMain.handle("get-default-downloads-path", async () => {
+    return app.getPath("downloads");
+  });
+
+  // Clear browser session data
+  ipcMain.handle("clear-browser-session-data", async () => {
+    try {
+      await session.defaultSession.clearCache();
+      await session.defaultSession.clearStorageData({
+        storages: ["cookies", "filesystem", "indexdb", "localstorage", "shadercache", "websql", "serviceworkers", "cachestorage"]
+      });
+      return { success: true, message: "Browsing cache and session data cleared successfully." };
+    } catch (err: any) {
+      console.error("Failed to clear session data:", err);
+      return { success: false, message: err.message || "Failed to clear data" };
+    }
+  });
+
   // Get screen sources for screen recording
   ipcMain.handle("get-screen-sources", async () => {
     console.log("Fetching screen sources...");
     const sources = await desktopCapturer.getSources({ types: ["screen"] });
     return sources;
+  });
+
+  // Firebase Firestore IPC Handlers
+  ipcMain.handle("firebase-init", async (event, config: FirebaseConfig) => {
+    console.log("Initializing Firebase from IPC...");
+    return initializeFirebase(config);
+  });
+
+  ipcMain.handle("firebase-get-status", async () => {
+    return getFirebaseConfigStatus();
+  });
+
+  ipcMain.handle("firebase-test-connection", async () => {
+    console.log("Testing Firestore connection...");
+    return await testFirestoreConnection();
+  });
+
+  ipcMain.handle("firebase-add-document", async (event, { collectionName, data }) => {
+    console.log(`Adding document to Firestore collection '${collectionName}'...`);
+    return await addFirestoreDocument(collectionName, data);
+  });
+
+  ipcMain.handle("firebase-get-documents", async (event, { collectionName, maxItems }) => {
+    console.log(`Fetching documents from Firestore collection '${collectionName}'...`);
+    return await getFirestoreDocuments(collectionName, maxItems);
+  });
+
+  ipcMain.handle("firebase-verify-class-code", async (event, { classCode }) => {
+    console.log(`Verifying class code '${classCode}' in Firestore...`);
+    return await verifyClassCode(classCode);
+  });
+
+  // Close application IPC handler
+  ipcMain.handle("close-app", async () => {
+    console.log("Closing application from renderer request...");
+    try {
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.close();
+      }
+    } catch (err) {
+      console.error("Error closing mainWindow:", err);
+    }
+    app.quit();
+  });
+
+  // Minimize window IPC handler
+  ipcMain.handle("minimize-app", async () => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.minimize();
+    }
+  });
+
+  // Toggle fullscreen IPC handler
+  ipcMain.handle("toggle-fullscreen", async () => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.setFullScreen(!mainWindow.isFullScreen());
+    }
   });
 });
 

@@ -77,7 +77,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   homeButton.onclick = () => {
     const webview = tabs[activeTabId!]?.webview;
-    webview?.loadURL("https://github.com");
+    webview?.loadURL("home.html");
   };
 
   goButton.onclick = () => {
@@ -101,5 +101,5 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   // Open the first tab
-  createTab("https://github.com");
+  createTab("home.html");
 });

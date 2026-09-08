@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Educational Browser - Class Dashboard</title>
+  <style>
+    :root {
+      --bg-main: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --border-color: #e2e8f0;
+      --card-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      min-height: 100%;
+      background: var(--bg-main);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      padding: 24px 28px 40px 28px;
+      overflow-y: auto;
+    }
+
+    body::-webkit-scrollbar {
+      width: 7px;
+    }
+    body::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    body::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    body::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    .dashboard-container {
+      max-width: 1360px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* === Hero Header === */
+    .hero-card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 24px 28px;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #2563eb, #3b82f6, #60a5fa);
+    }
+
+    .hero-top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .hero-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .hero-icon-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.12);
+    }
+
+    .hero-titles h1 {
+      font-size: 20px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hero-titles p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .hero-meta-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .live-clock-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .class-status-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #1d4ed8;
+    }
+
+    /* === Hero Search Bar === */
+    .hero-search-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .search-box {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .search-input-container {
+      position: relative;
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-input-icon {
+      position: absolute;
+      left: 16px;
+      color: #94a3b8;
+      pointer-events: none;
+      display: flex;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 13px 18px 13px 44px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #0f172a;
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 14px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .search-box input:focus {
+      border-color: var(--accent);
+      background: #ffffff;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    }
+
+    .search-box button {
+      padding: 12px 26px;
+      font-size: 14px;
+      font-weight: 700;
+      color: white;
+      background: linear-gradient(13deg, #2563eb 0%, #1d4ed8 100%);
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .search-box button:hover {
+      background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
+    }
+
+    .search-box button:active {
+      transform: translateY(0);
+    }
+
+    /* === Category Filter Tags === */
+    .filter-tags-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .filter-tag {
+      padding: 5px 12px;
+      border-radius: 16px;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      font-size: 12px;
+      font-weight: 600;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .filter-tag:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    .filter-tag.active {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+      color: #2563eb;
+      font-weight: 700;
+    }
+
+    /* === 2-Column Dashboard Layout === */
+    .dashboard-columns {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 20px;
+      align-items: start;
+    }
+
+    @media (max-width: 1040px) {
+      .dashboard-columns {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* === Left Column (Main Stage) === */
+    .main-stage {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .section-card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 22px 24px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 14px;
+      margin-bottom: 16px;
+    }
+
+    .section-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-badge {
+      font-size: 11px;
+      font-weight: 700;
+      color: #2563eb;
+      background: #eff6ff;
+      padding: 3px 10px;
+      border-radius: 12px;
+      border: 1px solid #bfdbfe;
+    }
+
+    .section-desc {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    /* === Whitelist Cards Grid === */
+    .whitelist-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 12px;
+    }
+
+    .site-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 12px 16px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+      gap: 12px;
+    }
+
+    .site-card:hover {
+      border-color: #3b82f6;
+      box-shadow: 0 8px 22px rgba(37, 99, 235, 0.12);
+      transform: translateY(-2px);
+    }
+
+    .site-info-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .site-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .site-logo img {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+      border-radius: 4px;
+    }
+
+    .site-details {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .site-heading {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #0f172a;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .site-sublink {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 1px;
+    }
+
+    .status-tag {
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 12px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .status-allowed {
+      background: #dcfce7;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+    }
+
+    .status-restricted {
+      background: #f1f5f9;
+      color: #94a3b8;
+      border: 1px solid #e2e8f0;
+    }
+
+
+    /* === Right Column (Side Widgets) === */
+    .side-widgets {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .widget-card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 18px 20px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .widget-title {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    /* Student Scratchpad */
+    .scratchpad-area {
+      width: 100%;
+      height: 110px;
+      padding: 10px 12px;
+      font-size: 12.5px;
+      color: #0f172a;
+      background: #f8fafc;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 10px;
+      outline: none;
+      resize: none;
+      font-family: inherit;
+      line-height: 1.45;
+      transition: border-color 0.2s;
+    }
+
+    .scratchpad-area:focus {
+      border-color: var(--accent);
+      background: #ffffff;
+    }
+
+    .scratchpad-status {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 6px;
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    /* Security items list */
+    .compliance-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .compliance-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #334155;
+      padding: 6px 10px;
+      background: #f8fafc;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .compliance-item span:first-child {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+    }
+
+    .compliance-tag {
+      font-size: 10px;
+      font-weight: 700;
+      color: #059669;
+      background: #ecfdf5;
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+
+    /* Academic Focus Card */
+    .focus-card {
+      background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%);
+      border: 1px solid #bfdbfe;
+    }
+
+    .focus-card p {
+      font-size: 12.5px;
+      color: #1e3a8a;
+      line-height: 1.5;
+      font-weight: 500;
+    }
+
+    /* Warning modals & animations */
+    .input-error {
+      border-color: #ef4444 !important;
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.25) !important;
+      animation: shake 0.4s ease-in-out;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+
+    @keyframes zoomIn {
+      from { opacity: 0; transform: scale(0.94); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- === Hero Top Section === -->
+    <div class="hero-card">
+      <div class="hero-top-bar">
+        <div class="hero-brand">
+          <div class="hero-icon-badge">🎓</div>
+          <div class="hero-titles">
+            <h1>Academic Class Dashboard</h1>
+            <p>Focused, sandboxed learning environment with teacher whitelist enforcement</p>
+          </div>
+        </div>
+
+        <div class="hero-meta-bar">
+          <div class="live-clock-pill">
+            <span>🕒</span>
+            <span id="live-clock">Loading time...</span>
+          </div>
+          <div class="class-status-pill" id="hero-class-pill">
+            <span>🏫</span>
+            <span id="hero-class-label">Class: None</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="hero-search-wrapper">
+        <form class="search-box" id="search-form" onsubmit="event.preventDefault(); navigate();">
+          <div class="search-input-container">
+            <span class="search-input-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </span>
+            <input type="text" id="query" placeholder="Search approved educational sites or enter whitelisted address..." autocomplete="off" oninput="handleSearchInput(event)" />
+          </div>
+          <button type="submit">
+            <span>Open Site</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </form>
+
+        <!-- Category quick filters -->
+        <div class="filter-tags-bar">
+          <span style="font-size: 11.5px; font-weight: 700; color: #64748b; margin-right: 4px;">Quick Filters:</span>
+          <button class="filter-tag active" onclick="applyCategoryFilter('all', this)">All Approved</button>
+          <button class="filter-tag" onclick="applyCategoryFilter('math', this)">📐 Math & Science</button>
+          <button class="filter-tag" onclick="applyCategoryFilter('courses', this)">📘 Courses & Videos</button>
+          <button class="filter-tag" onclick="applyCategoryFilter('ref', this)">📖 Encyclopedia & Docs</button>
+          <button class="filter-tag" onclick="applyCategoryFilter('coding', this)">💻 Computer Science</button>
+        </div>
+
+        <!-- Live search status / error feedback -->
+        <div id="search-live-status" style="display: none; font-size: 12.5px; font-weight: 600; padding: 10px 14px; border-radius: 10px;"></div>
+        
+        <div id="search-warning-banner" style="display: none; background: #fef2f2; border: 1.5px solid #fca5a5; border-radius: 12px; padding: 12px 16px;">
+          <div style="display: flex; align-items: flex-start; gap: 10px;">
+            <span style="font-size: 22px;">⛔</span>
+            <div style="flex: 1;">
+              <div style="font-size: 13.5px; font-weight: 800; color: #b91c1c;">Website Not Whitelisted for this Class</div>
+              <div id="search-warning-text" style="font-size: 12.5px; color: #7f1d1d; font-weight: 600; margin-top: 2px;"></div>
+            </div>
+            <button type="button" onclick="document.getElementById('search-warning-banner').style.display='none'" style="background: none; border: none; font-size: 18px; color: #991b1b; cursor: pointer;">&times;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- === 2-Column Classic Dashboard === -->
+    <div class="dashboard-columns">
+      <!-- Left Column: Main Learning Hub -->
+      <div class="main-stage">
+        <!-- Section 1: Approved Whitelisted Websites -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-title-group">
+              <span class="section-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                Approved Classroom Websites
+              </span>
+              <span class="section-badge" id="whitelist-count-badge">0 Sites Allowed</span>
+            </div>
+            <span style="font-size: 12px; font-weight: 600; color: #64748b;">Instant Launch</span>
+          </div>
+
+          <p class="section-desc">Teacher-approved learning sites for your active class session. Click any card to launch immediately in this browser.</p>
+
+          <div class="whitelist-grid" id="whitelist-list">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Side Widgets -->
+      <div class="side-widgets">
+        <!-- Widget 1: Active Class Session Card -->
+        <div class="widget-card">
+          <div class="widget-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            <span>Active Classroom</span>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 14px; margin-bottom: 12px;">
+            <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Class Name</div>
+            <div id="side-class-name" style="font-size: 14px; font-weight: 800; color: #0f172a; margin-top: 2px;">Loading...</div>
+
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 10px;">
+              <div>
+                <div style="font-size: 10.5px; font-weight: 700; color: #64748b; text-transform: uppercase;">Class Code</div>
+                <div id="side-class-code" style="font-size: 13.5px; font-weight: 800; font-family: monospace; color: #2563eb; margin-top: 1px;">---</div>
+              </div>
+              <div style="font-size: 11px; font-weight: 700; color: #059669; background: #ecfdf5; padding: 3px 8px; border-radius: 10px; border: 1px solid #a7f3d0;">
+                ● Active
+              </div>
+            </div>
+          </div>
+
+          <button type="button" onclick="triggerParentClassSwitch()" style="width: 100%; padding: 10px; font-size: 12.5px; font-weight: 700; color: #1e293b; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 10px; cursor: pointer; transition: all 0.15s ease;">
+            🔄 Switch Classroom Code
+          </button>
+        </div>
+
+        <!-- Widget 2: Student Class Scratchpad -->
+        <div class="widget-card">
+          <div class="widget-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            <span>Class Notes Scratchpad</span>
+          </div>
+          <textarea id="scratchpad" class="scratchpad-area" placeholder="Jot down formulas, homework, or notes during class..." oninput="handleScratchpadInput(event)"></textarea>
+          <div class="scratchpad-status">
+            <span id="scratchpad-saved-text">✓ Auto-saved locally</span>
+            <button type="button" onclick="clearScratchpad()" style="background: none; border: none; font-size: 11px; color: #94a3b8; cursor: pointer; text-decoration: underline;">Clear</button>
+          </div>
+        </div>
+
+        <!-- Widget 3: Proctoring & Safety Status -->
+        <div class="widget-card">
+          <div class="widget-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>Security & Compliance</span>
+          </div>
+          <div class="compliance-list">
+            <div class="compliance-item">
+              <span>🛡️ Whitelist Filter</span>
+              <span class="compliance-tag">Enforced</span>
+            </div>
+            <div class="compliance-item">
+              <span>🪟 Popup Shield</span>
+              <span class="compliance-tag">Protected</span>
+            </div>
+            <div class="compliance-item">
+              <span>🔒 Sandbox Isolation</span>
+              <span class="compliance-tag">Secure</span>
+            </div>
+            <div class="compliance-item">
+              <span>☁️ Firestore Sync</span>
+              <span class="compliance-tag">Live</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Widget 4: Academic Study Tip -->
+        <div class="widget-card focus-card">
+          <div class="widget-title" style="color: #1e40af;">
+            <span>💡 Study Tip</span>
+          </div>
+          <p id="daily-study-tip">
+            "Organize research topics by category and bookmark authorized study tools before starting assignments."
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dedicated Restricted Site Warning Modal in Home Portal -->
+  <div id="home-warning-modal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(12px); z-index: 99999; align-items: center; justify-content: center;">
+    <div style="background: #ffffff; max-width: 480px; width: 90%; text-align: center; border-radius: 24px; padding: 36px 30px; border: 1.5px solid #fecaca; box-shadow: 0 25px 50px rgba(239, 68, 68, 0.15); animation: zoomIn 0.25s cubic-bezier(0.16, 1, 0.3, 1); margin: auto;">
+      <div style="font-size: 50px; margin-bottom: 12px;">⛔</div>
+      <h2 style="margin: 0 0 10px 0; color: #dc2626; font-size: 21px; font-weight: 800;">Access Restricted!</h2>
+      <p style="margin: 0 0 16px 0; color: #475569; font-size: 13.5px; line-height: 1.5; font-weight: 500;">
+        The website or query you attempted is <strong>NOT allowed</strong> for your active class session.
+      </p>
+      
+      <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 14px; margin-bottom: 20px; text-align: left;">
+        <div style="font-size: 11px; font-weight: 700; color: #991b1b; text-transform: uppercase; margin-bottom: 4px;">Blocked Destination:</div>
+        <div id="home-blocked-url" style="font-size: 13.5px; font-weight: 700; color: #b91c1c; word-break: break-all;"></div>
+        <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-top: 10px; margin-bottom: 4px;">Active Class:</div>
+        <div id="home-active-class" style="font-size: 13px; font-weight: 700; color: #0284c7;"></div>
+      </div>
+
+      <p style="font-size: 12.5px; color: #64748b; margin-bottom: 20px;">
+        This educational browser enforces strict browsing safety. Only teacher-approved whitelisted sites can be opened.
+      </p>
+
+      <div style="display: flex; gap: 10px;">
+        <button type="button" onclick="closeHomeWarning()" style="flex: 1; padding: 12px; font-size: 13.5px; font-weight: 700; border-radius: 12px; border: 1px solid #cbd5e1; background: #f8fafc; color: #475569; cursor: pointer;">
+          Dismiss
+        </button>
+        <button type="button" onclick="closeHomeWarningAndFocusList()" style="flex: 1.5; padding: 12px; font-size: 13.5px; font-weight: 700; border-radius: 12px; border: none; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; cursor: pointer; box-shadow: 0 4px 14px rgba(37,99,235,0.4);">
+          View Allowed Sites ➔
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    const studyTips = [
+      "Use focused 25-minute study intervals followed by a 5-minute break to maintain peak retention.",
+      "Review teacher-approved flashcards and sample exercises before attempting class quizzes.",
+      "Bookmark your most frequently used academic portals for quick, distraction-free access.",
+      "Take concise summary notes in the scratchpad to review key formulas before homework deadlines."
+    ];
+
+    function updateLiveClock() {
+      const el = document.getElementById('live-clock');
+      if (!el) return;
+      const now = new Date();
+      const options = { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+      el.textContent = now.toLocaleDateString(undefined, options);
+    }
+    setInterval(updateLiveClock, 1000);
+    updateLiveClock();
+
+    // Randomize study tip on load
+    const tipEl = document.getElementById('daily-study-tip');
+    if (tipEl) {
+      tipEl.textContent = studyTips[Math.floor(Math.random() * studyTips.length)];
+    }
+
+    // Scratchpad auto-save
+    const scratchpad = document.getElementById('scratchpad');
+    if (scratchpad) {
+      scratchpad.value = localStorage.getItem('academic_scratchpad_notes') || '';
+    }
+
+    function handleScratchpadInput(e) {
+      localStorage.setItem('academic_scratchpad_notes', e.target.value);
+      const status = document.getElementById('scratchpad-saved-text');
+      if (status) {
+        status.textContent = 'Saving...';
+        setTimeout(() => {
+          if (status) status.textContent = '✓ Saved locally';
+        }, 500);
+      }
+    }
+
+    function clearScratchpad() {
+      if (confirm("Clear your scratchpad notes?")) {
+        localStorage.removeItem('academic_scratchpad_notes');
+        if (scratchpad) scratchpad.value = '';
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/[&<>"']/g, m => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      }[m]));
+    }
+
+    function getWhitelistedWebsitesArray() {
+      let websites = [];
+      const stored = localStorage.getItem('active_class_whitelist');
+      if (stored) {
+        try {
+          websites = JSON.parse(stored);
+        } catch (e) {}
+      }
+      return Array.isArray(websites) ? websites : [];
+    }
+
+    function isUrlWhitelisted(targetUrl) {
+      if (!targetUrl || targetUrl === 'home.html' || targetUrl.includes('home.html') || targetUrl.startsWith('file:') || targetUrl === 'about:blank') {
+        return true;
+      }
+
+      const websites = getWhitelistedWebsitesArray();
+      if (!websites || websites.length === 0) {
+        return false;
+      }
+
+      let targetHostname = '';
+      try {
+        const u = new URL(targetUrl.startsWith('http') ? targetUrl : 'https://' + targetUrl);
+        targetHostname = u.hostname.toLowerCase();
+      } catch (e) {
+        return false;
+      }
+
+      const cleanTarget = targetHostname.replace(/^www\./, '');
+      if (!cleanTarget) return false;
+
+      return websites.some(entry => {
+        if (!entry) return false;
+        let entryHostname = entry.toLowerCase().trim();
+        try {
+          if (entryHostname.startsWith('http')) {
+            entryHostname = new URL(entryHostname).hostname;
+          }
+        } catch (e) {}
+
+        const cleanEntry = entryHostname.replace(/^www\./, '').replace(/\/+$/, '');
+        if (!cleanEntry) return false;
+
+        return cleanTarget === cleanEntry || cleanTarget.endsWith('.' + cleanEntry);
+      });
+    }
+
+    function closeHomeWarning() {
+      const modal = document.getElementById('home-warning-modal');
+      if (modal) modal.style.display = 'none';
+      const input = document.getElementById('query');
+      if (input) input.focus();
+    }
+
+    function closeHomeWarningAndFocusList() {
+      closeHomeWarning();
+      const whitelistCard = document.querySelector('.main-stage');
+      if (whitelistCard) {
+        whitelistCard.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    function showWarning(url) {
+      const classCode = localStorage.getItem('active_class_code') || '';
+      const className = localStorage.getItem('active_class_name') || classCode;
+      const classLabel = className && className !== classCode ? `${className} (${classCode})` : (classCode || 'None');
+
+      const input = document.getElementById('query');
+      if (input) {
+        input.classList.remove('input-error');
+        void input.offsetWidth;
+        input.classList.add('input-error');
+      }
+
+      const banner = document.getElementById('search-warning-banner');
+      const bannerText = document.getElementById('search-warning-text');
+      if (banner && bannerText) {
+        bannerText.innerHTML = `"${escapeHtml(url)}" is NOT on the whitelist for class <strong>${escapeHtml(classLabel)}</strong>.`;
+        banner.style.display = 'block';
+      }
+
+      const modal = document.getElementById('home-warning-modal');
+      const blockedUrlEl = document.getElementById('home-blocked-url');
+      const activeClassEl = document.getElementById('home-active-class');
+      if (modal) {
+        if (blockedUrlEl) blockedUrlEl.textContent = url;
+        if (activeClassEl) activeClassEl.textContent = classLabel;
+        modal.style.display = 'flex';
+      }
+    }
+
+    function handleSearchInput(e) {
+      const q = (e.target.value || '').trim().toLowerCase();
+      const input = document.getElementById('query');
+      const liveStatus = document.getElementById('search-live-status');
+      const banner = document.getElementById('search-warning-banner');
+
+      input.classList.remove('input-error');
+
+      const websites = getWhitelistedWebsitesArray();
+      const classCode = localStorage.getItem('active_class_code') || '';
+
+      if (!q) {
+        if (liveStatus) liveStatus.style.display = 'none';
+        renderWhitelistedWebsites();
+        return;
+      }
+
+      const matched = websites.filter(site => {
+        if (!site) return false;
+        const clean = site.toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/+$/, '');
+        return clean.includes(q) || q.includes(clean);
+      });
+
+      if (matched.length > 0) {
+        if (liveStatus) {
+          liveStatus.style.display = 'block';
+          liveStatus.style.background = '#dcfce7';
+          liveStatus.style.color = '#15803d';
+          liveStatus.style.border = '1px solid #bbf7d0';
+          liveStatus.innerHTML = `✓ Found <strong>${matched.length}</strong> approved class site(s) matching "${escapeHtml(q)}" — Press Enter to open`;
+        }
+        if (banner) banner.style.display = 'none';
+        renderWhitelistedWebsites(matched);
+      } else {
+        if (liveStatus) {
+          liveStatus.style.display = 'block';
+          liveStatus.style.background = '#fef2f2';
+          liveStatus.style.color = '#b91c1c';
+          liveStatus.style.border = '1px solid #fecaca';
+          liveStatus.innerHTML = `⛔ <strong>"${escapeHtml(q)}"</strong> does NOT match any approved website for class <strong>${escapeHtml(classCode)}</strong>.`;
+        }
+        renderWhitelistedWebsites([]);
+      }
+    }
+
+    function applyCategoryFilter(cat, btnEl) {
+      document.querySelectorAll('.filter-tag').forEach(b => b.classList.remove('active'));
+      if (btnEl) btnEl.classList.add('active');
+
+      const websites = getWhitelistedWebsitesArray();
+      if (cat === 'all') {
+        renderWhitelistedWebsites();
+        return;
+      }
+
+      // Filter whitelisted sites matching category keywords
+      const keywords = {
+        'math': ['math', 'science', 'khan', 'wolfram', 'physics', 'bio', 'chem'],
+        'courses': ['coursera', 'quizlet', 'class', 'edx', 'udemy', 'learn', 'academy'],
+        'ref': ['wiki', 'britannica', 'enc', 'dict', 'archive', 'lib'],
+        'coding': ['code', 'github', 'w3schools', 'stack', 'dev', 'python']
+      }[cat] || [];
+
+      const filtered = websites.filter(site => {
+        const s = site.toLowerCase();
+        return keywords.some(k => s.includes(k));
+      });
+
+      renderWhitelistedWebsites(filtered);
+    }
+
+    function navigate(customUrl) {
+      const val = (customUrl || document.getElementById('query').value || '').trim();
+      if (!val) return;
+
+      const websites = getWhitelistedWebsitesArray();
+
+      if (val === 'home.html' || val === 'home' || val.includes('home.html') || val.startsWith('file:') || val === 'about:blank') {
+        window.location.reload();
+        return;
+      }
+
+      let target = val;
+      const isExplicitUrl = /^https?:\/\//i.test(target) || (target.includes('.') && !target.includes(' '));
+
+      if (isExplicitUrl) {
+        if (!/^https?:\/\//i.test(target)) {
+          target = 'https://' + target;
+        }
+
+        if (!isUrlWhitelisted(target)) {
+          showWarning(val);
+          return;
+        }
+
+        const banner = document.getElementById('search-warning-banner');
+        if (banner) banner.style.display = 'none';
+
+        window.location.href = target;
+        return;
+      }
+
+      const q = val.toLowerCase();
+      const matched = websites.filter(site => {
+        if (!site) return false;
+        const clean = site.toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/+$/, '');
+        return clean.includes(q) || q.includes(clean);
+      });
+
+      if (matched.length > 0) {
+        const bestMatch = matched[0];
+        const targetUrl = bestMatch.startsWith('http') ? bestMatch : 'https://' + bestMatch;
+
+        const banner = document.getElementById('search-warning-banner');
+        if (banner) banner.style.display = 'none';
+
+        window.location.href = targetUrl;
+        return;
+      }
+
+      showWarning(val);
+    }
+
+    function getFaviconUrl(url) {
+      try {
+        const u = new URL(url.startsWith('http') ? url : 'https://' + url);
+        return `https://www.google.com/s2/favicons?domain=${u.hostname}&sz=64`;
+      } catch (e) {
+        return 'https://www.google.com/s2/favicons?domain=google.com&sz=64';
+      }
+    }
+
+    function getCleanTitle(url) {
+      try {
+        const u = new URL(url.startsWith('http') ? url : 'https://' + url);
+        const host = u.hostname.replace(/^www\./, '');
+        const parts = host.split('.');
+        if (parts.length > 1) {
+          return parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
+        }
+        return host;
+      } catch (e) {
+        return url;
+      }
+    }
+
+    function renderWhitelistedWebsites(customList) {
+      const listContainer = document.getElementById('whitelist-list');
+      const countBadge = document.getElementById('whitelist-count-badge');
+      const sideClassName = document.getElementById('side-class-name');
+      const sideClassCode = document.getElementById('side-class-code');
+      const heroClassLabel = document.getElementById('hero-class-label');
+
+      const classCode = localStorage.getItem('active_class_code') || '';
+      const className = localStorage.getItem('active_class_name') || '';
+      const displayLabel = classCode ? (className && className !== classCode ? `${className} (${classCode})` : classCode) : 'None';
+
+      if (sideClassName) sideClassName.textContent = className || (classCode ? `Class ${classCode}` : 'Not Enrolled');
+      if (sideClassCode) sideClassCode.textContent = classCode || 'NONE';
+      if (heroClassLabel) heroClassLabel.textContent = `Class: ${displayLabel}`;
+
+      const websites = customList !== undefined ? customList : getWhitelistedWebsitesArray();
+
+      if (countBadge) {
+        countBadge.textContent = `${websites.length} Site${websites.length === 1 ? '' : 's'} Allowed`;
+      }
+
+      listContainer.innerHTML = '';
+
+      if (!websites || websites.length === 0) {
+        const queryVal = document.getElementById('query')?.value.trim();
+        if (queryVal) {
+          listContainer.innerHTML = `
+            <div style="grid-column: 1 / -1; padding: 24px 16px; text-align: center; color: #dc2626; font-size: 13px; font-weight: 600; background: #fef2f2; border: 1px dashed #fca5a5; border-radius: 14px;">
+              ⛔ No approved sites match "<strong>${escapeHtml(queryVal)}</strong>".<br/>Only teacher-approved websites can be visited.
+            </div>
+          `;
+        } else {
+          listContainer.innerHTML = `
+            <div style="grid-column: 1 / -1; padding: 28px 16px; text-align: center; color: #64748b; font-size: 13px; font-weight: 600; background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 14px;">
+              📋 No whitelisted websites registered yet for class ${escapeHtml(displayLabel)}.
+            </div>
+          `;
+        }
+      } else {
+        websites.forEach(url => {
+          const item = document.createElement('a');
+          item.className = 'site-card';
+          item.href = url.startsWith('http') ? url : 'https://' + url;
+          const faviconUrl = getFaviconUrl(url);
+          const cleanTitle = getCleanTitle(url);
+
+          item.innerHTML = `
+            <div class="site-info-wrapper">
+              <div class="site-logo">
+                <img src="${faviconUrl}" alt="" onerror="this.style.display='none'" />
+              </div>
+              <div class="site-details">
+                <div class="site-heading" title="${escapeHtml(cleanTitle)}">${escapeHtml(cleanTitle)}</div>
+                <div class="site-sublink" title="${escapeHtml(url)}">${escapeHtml(url)}</div>
+              </div>
+            </div>
+            <div class="status-tag status-allowed">✓ Allowed</div>
+          `;
+          listContainer.appendChild(item);
+        });
+      }
+    }
+
+    function triggerParentClassSwitch() {
+      // Instruct parent electron browser shell to click switch button if accessible
+      try {
+        const parentDoc = window.parent?.document;
+        const switchBtn = parentDoc?.getElementById('switch-class-btn') || parentDoc?.getElementById('settings-switch-class-btn');
+        if (switchBtn) {
+          switchBtn.click();
+          return;
+        }
+      } catch (e) {}
+
+      // Fallback
+      alert("Click the 'Switch' button in the top navigation bar to enter a new class code.");
+    }
+
+    function initHomePortal() {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('code')) {
+        const qCode = urlParams.get('code');
+        const qName = urlParams.get('name') || qCode;
+        const qList = urlParams.get('whitelist');
+        if (qCode !== null) localStorage.setItem('active_class_code', qCode);
+        if (qName !== null) localStorage.setItem('active_class_name', qName);
+        if (qList !== null) localStorage.setItem('active_class_whitelist', qList);
+      }
+      renderWhitelistedWebsites();
+    }
+
+    window.setHomePortalData = function(code, name, websites) {
+      localStorage.setItem('active_class_code', code || '');
+      localStorage.setItem('active_class_name', name || '');
+      if (Array.isArray(websites)) {
+        localStorage.setItem('active_class_whitelist', JSON.stringify(websites));
+      } else {
+        localStorage.setItem('active_class_whitelist', '[]');
+      }
+
+      try {
+        const newUrl = new URL(window.location.href);
+        if (code) {
+          newUrl.searchParams.set('code', code);
+          newUrl.searchParams.set('name', name || code);
+          newUrl.searchParams.set('whitelist', JSON.stringify(websites || []));
+        } else {
+          newUrl.searchParams.delete('code');
+          newUrl.searchParams.delete('name');
+          newUrl.searchParams.delete('whitelist');
+        }
+        window.history.replaceState({}, '', newUrl.href);
+      } catch (e) {}
+
+      renderWhitelistedWebsites();
+    };
+
+    document.addEventListener('DOMContentLoaded', initHomePortal);
+    window.addEventListener('storage', renderWhitelistedWebsites);
+  </script>
+</body>
+</html>

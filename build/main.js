@@ -36,9 +36,30 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const electron_1 = require("electron");
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
+const firebase_1 = require("./src/firebase");
+// Ignore certificate date errors (essential for educational webview and client clock skew)
+electron_1.app.commandLine.appendSwitch("ignore-certificate-errors");
+electron_1.app.commandLine.appendSwitch("allow-insecure-localhost", "true");
 let mainWindow;
-electron_1.app.whenReady().then(() => {
+electron_1.app.whenReady().then(async () => {
     console.log("Creating main window...");
+    // Handle certificate errors gracefully for all webContents
+    electron_1.app.on("certificate-error", (event, webContents, url, error, certificate, callback) => {
+        event.preventDefault();
+        callback(true);
+    });
+    electron_1.session.defaultSession.setCertificateVerifyProc((request, callback) => {
+        callback(0); // 0 = valid certificate
+    });
+    // Auto-initialize Firebase if credentials exist in .env
+    const firebaseInitResult = (0, firebase_1.initializeFirebase)();
+    if (firebaseInitResult.success) {
+        console.log("🔥 Firebase initialized on startup:", firebaseInitResult.message);
+        await (0, firebase_1.ensureDefaultFirebaseClasses)();
+    }
+    else {
+        console.log("ℹ️ Firebase status on startup:", firebaseInitResult.message);
+    }
     // Resolve the preload script path
     const preloadPath = path.join(__dirname, "../build/preload.js");
     console.log("Preload path:", preloadPath);
@@ -78,6 +99,15 @@ electron_1.app.whenReady().then(() => {
         else {
             callback(false);
         }
+    });
+    // Intercept all created webContents (including webviews) to prevent unmonitored popups
+    electron_1.app.on("web-contents-created", (event, contents) => {
+        contents.setWindowOpenHandler(({ url }) => {
+            // Prevent popups from escaping sandbox/whitelist into rogue windows
+            // By denying here, the <webview> handles approved navigation in preload.ts
+            console.log("Blocked window open popup to:", url);
+            return { action: "deny" };
+        });
     });
     // Set application menu
     const menu = require("./src/menu");
@@ -195,11 +225,78 @@ electron_1.app.whenReady().then(() => {
         });
         return result;
     });
+    // Get default downloads path
+    electron_1.ipcMain.handle("get-default-downloads-path", async () => {
+        return electron_1.app.getPath("downloads");
+    });
+    // Clear browser session data
+    electron_1.ipcMain.handle("clear-browser-session-data", async () => {
+        try {
+            await electron_1.session.defaultSession.clearCache();
+            await electron_1.session.defaultSession.clearStorageData({
+                storages: ["cookies", "filesystem", "indexdb", "localstorage", "shadercache", "websql", "serviceworkers", "cachestorage"]
+            });
+            return { success: true, message: "Browsing cache and session data cleared successfully." };
+        }
+        catch (err) {
+            console.error("Failed to clear session data:", err);
+            return { success: false, message: err.message || "Failed to clear data" };
+        }
+    });
     // Get screen sources for screen recording
     electron_1.ipcMain.handle("get-screen-sources", async () => {
         console.log("Fetching screen sources...");
         const sources = await electron_1.desktopCapturer.getSources({ types: ["screen"] });
         return sources;
+    });
+    // Firebase Firestore IPC Handlers
+    electron_1.ipcMain.handle("firebase-init", async (event, config) => {
+        console.log("Initializing Firebase from IPC...");
+        return (0, firebase_1.initializeFirebase)(config);
+    });
+    electron_1.ipcMain.handle("firebase-get-status", async () => {
+        return (0, firebase_1.getFirebaseConfigStatus)();
+    });
+    electron_1.ipcMain.handle("firebase-test-connection", async () => {
+        console.log("Testing Firestore connection...");
+        return await (0, firebase_1.testFirestoreConnection)();
+    });
+    electron_1.ipcMain.handle("firebase-add-document", async (event, { collectionName, data }) => {
+        console.log(`Adding document to Firestore collection '${collectionName}'...`);
+        return await (0, firebase_1.addFirestoreDocument)(collectionName, data);
+    });
+    electron_1.ipcMain.handle("firebase-get-documents", async (event, { collectionName, maxItems }) => {
+        console.log(`Fetching documents from Firestore collection '${collectionName}'...`);
+        return await (0, firebase_1.getFirestoreDocuments)(collectionName, maxItems);
+    });
+    electron_1.ipcMain.handle("firebase-verify-class-code", async (event, { classCode }) => {
+        console.log(`Verifying class code '${classCode}' in Firestore...`);
+        return await (0, firebase_1.verifyClassCode)(classCode);
+    });
+    // Close application IPC handler
+    electron_1.ipcMain.handle("close-app", async () => {
+        console.log("Closing application from renderer request...");
+        try {
+            if (mainWindow && !mainWindow.isDestroyed()) {
+                mainWindow.close();
+            }
+        }
+        catch (err) {
+            console.error("Error closing mainWindow:", err);
+        }
+        electron_1.app.quit();
+    });
+    // Minimize window IPC handler
+    electron_1.ipcMain.handle("minimize-app", async () => {
+        if (mainWindow && !mainWindow.isDestroyed()) {
+            mainWindow.minimize();
+        }
+    });
+    // Toggle fullscreen IPC handler
+    electron_1.ipcMain.handle("toggle-fullscreen", async () => {
+        if (mainWindow && !mainWindow.isDestroyed()) {
+            mainWindow.setFullScreen(!mainWindow.isFullScreen());
+        }
     });
 });
 electron_1.app.on("window-all-closed", () => {

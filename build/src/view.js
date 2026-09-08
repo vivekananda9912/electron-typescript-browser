@@ -17,7 +17,7 @@ function createBrowserView(mainWindow) {
     };
     resizeView();
     view.setAutoResize({ width: true, height: true });
-    view.webContents.loadURL("https://github.com");
+    view.webContents.loadURL("home.html");
     mainWindow.on("resize", resizeView);
     return view;
 }

@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Github Browser</title>
+    <title>Educational Browser</title>
     <meta
       http-equiv="Content-Security-Policy"
       content="default-src 'self' https://* 'unsafe-eval' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://*; style-src 'self' 'unsafe-inline' https://*; img-src 'self' https://* data: blob:; connect-src 'self' https://*; frame-src 'self' https://*;"
@@ -14,7 +14,19 @@
         height: 100%;
         width: 100%;
         overflow: hidden;
-        font-family: sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        background: #ffffff;
+        color: #0f172a;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+
+      html::-webkit-scrollbar,
+      body::-webkit-scrollbar,
+      #app::-webkit-scrollbar {
+        display: none;
+        width: 0;
+        height: 0;
       }
 
       #app {
@@ -22,43 +34,421 @@
         flex-direction: column;
         height: 100%;
         width: 100%;
+        overflow: hidden;
       }
 
+      /* === Top Navigation Controls Bar === */
       #controls {
         display: flex;
         align-items: center;
-        padding: 4px;
-        gap: 5px;
-        background: #f3f3f3;
-        border-bottom: 1px solid #ccc;
+        padding: 9px 16px;
+        gap: 10px;
+        background: #ffffff;
+        border-bottom: 1px solid #e2e8f0;
         flex-shrink: 0;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.02);
+        z-index: 10;
+      }
+
+      .nav-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: #f8fafc;
+        color: #475569;
+        border: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .nav-btn:hover {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+        color: #0f172a;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+
+      .nav-btn:active {
+        transform: translateY(0);
+        background: #e2e8f0;
+      }
+
+      .nav-btn:disabled {
+        opacity: 0.35;
+        cursor: default;
+        pointer-events: none;
+        box-shadow: none;
+        transform: none;
+      }
+
+      .spinning svg {
+        animation: navSpin 0.6s linear;
+      }
+
+      @keyframes navSpin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+
+      /* Address Bar Container with embedded search icon */
+      .address-container {
+        position: relative;
+        flex-grow: 1;
+        display: flex;
+        align-items: center;
+      }
+
+      .address-icon {
+        position: absolute;
+        left: 14px;
+        font-size: 14px;
+        color: #64748b;
+        pointer-events: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
       #address-bar {
-        flex-grow: 1;
-        padding: 5px;
-        font-size: 14px;
+        width: 100%;
+        padding: 8px 16px 8px 40px;
+        font-size: 13.5px;
+        font-weight: 500;
+        color: #0f172a;
+        background: #f8fafc;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 22px;
+        outline: none;
+        transition: all 0.2s ease;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
       }
 
+      #address-bar:focus {
+        background: #ffffff;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3.5px rgba(59, 130, 246, 0.15), inset 0 1px 2px rgba(0, 0, 0, 0.01);
+      }
+
+      #address-bar::placeholder {
+        color: #94a3b8;
+      }
+
+      #go {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+      }
+
+      #go:hover {
+        background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+      }
+
+      #go:active {
+        transform: translateY(0);
+      }
+
+      #new-tab {
+        background: #eff6ff;
+        color: #2563eb;
+        border: 1px solid #bfdbfe;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      #new-tab:hover {
+        background: #dbeafe;
+        border-color: #93c5fd;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
+      }
+
+      #class-info-badge {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #f0fdf4;
+        color: #166534;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        border: 1px solid #bbf7d0;
+      }
+
+      #switch-class-btn {
+        background: #16a34a;
+        color: white;
+        border: none;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      #switch-class-btn:hover {
+        background: #15803d;
+      }
+
+      #settings-button {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        color: #475569;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+      }
+
+      #settings-button:hover {
+        background: #f1f5f9;
+        color: #0f172a;
+        border-color: #cbd5e1;
+        transform: rotate(45deg);
+      }
+
+      /* === Close Browser Button === */
+      #close-browser-button {
+        background: #fef2f2;
+        color: #dc2626;
+        border: 1px solid #fecaca;
+        padding: 7px 13px;
+        height: 36px;
+        border-radius: 10px;
+        font-size: 12.5px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        flex-shrink: 0;
+        margin-left: 2px;
+      }
+
+      #close-browser-button:hover {
+        background: #dc2626;
+        color: #ffffff;
+        border-color: #dc2626;
+        transform: translateY(-1px);
+        box-shadow: 0 3px 10px rgba(220, 38, 38, 0.25);
+      }
+
+      #close-browser-button:active {
+        transform: translateY(0);
+        background: #b91c1c;
+      }
+
+      #close-browser-button svg {
+        transition: transform 0.2s ease;
+      }
+
+      #close-browser-button:hover svg {
+        transform: scale(1.15);
+      }
+
+      /* === Top Loading Progress Bar === */
+      #loading-bar {
+        height: 3px;
+        width: 0%;
+        background: linear-gradient(90deg, #3b82f6, #60a5fa, #93c5fd);
+        transition: width 0.3s ease, opacity 0.3s ease;
+        opacity: 0;
+        box-shadow: 0 0 8px #60a5fa;
+        z-index: 20;
+      }
+
+      #loading-bar.loading {
+        opacity: 1;
+        width: 70%;
+      }
+
+      #loading-bar.finish {
+        opacity: 1;
+        width: 100%;
+      }
+
+      /* === Tab Bar === */
       #tabs {
         display: flex;
-        gap: 5px;
-        padding: 4px;
-        background: #eee;
-        border-bottom: 1px solid #ccc;
+        align-items: flex-end;
+        gap: 6px;
+        padding: 8px 14px 0 14px;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
         flex-shrink: 0;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
       }
 
-      #tabs button {
-        padding: 5px 10px;
-        border: none;
-        background: #ddd;
+      #tabs::-webkit-scrollbar {
+        display: none;
+        width: 0;
+        height: 0;
+      }
+
+      .tab-item {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        max-width: 220px;
+        min-width: 140px;
+        padding: 7px 10px 8px 10px;
+        border: 1px solid transparent;
+        border-bottom: none;
+        background: transparent;
+        color: #64748b;
+        border-radius: 10px 10px 0 0;
+        font-size: 12.5px;
+        font-weight: 500;
         cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        user-select: none;
       }
 
-      #tabs button.active {
-        font-weight: bold;
-        background: #ccc;
+      .tab-item:hover {
+        background: rgba(226, 232, 240, 0.7);
+        color: #1e293b;
+      }
+
+      .tab-item.active {
+        font-weight: 600;
+        background: #ffffff;
+        color: #0f172a;
+        border: 1px solid #e2e8f0;
+        border-bottom: 1px solid #ffffff;
+        margin-bottom: -1px;
+        box-shadow: 0 -3px 12px rgba(15, 23, 42, 0.05), 0 2px 4px rgba(15, 23, 42, 0.02);
+      }
+
+      .tab-item.active::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 12px;
+        right: 12px;
+        height: 2.5px;
+        background: linear-gradient(90deg, #2563eb, #3b82f6);
+        border-radius: 0 0 3px 3px;
+      }
+
+      .tab-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        flex-shrink: 0;
+        transition: all 0.2s ease;
+        overflow: hidden;
+      }
+
+      .tab-favicon {
+        width: 16px;
+        height: 16px;
+        object-fit: contain;
+        border-radius: 3px;
+        display: block;
+      }
+
+      .tab-item.active .tab-icon-dashboard {
+        background: #eff6ff;
+        color: #2563eb;
+        border: 1px solid #dbeafe;
+      }
+
+      .tab-item:not(.active) .tab-icon-dashboard {
+        background: #f1f5f9;
+        color: #64748b;
+        border: 1px solid #e2e8f0;
+      }
+
+      .tab-item.active .tab-icon-web {
+        background: #ffffff;
+        color: #334155;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      }
+
+      .tab-item:not(.active) .tab-icon-web {
+        background: #f8fafc;
+        color: #94a3b8;
+        border: 1px solid transparent;
+      }
+
+      .tab-title {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 12.5px;
+        letter-spacing: -0.01em;
+      }
+
+      .tab-item.active .tab-title {
+        color: #0f172a;
+        font-weight: 700;
+      }
+
+      .tab-close {
+        width: 20px;
+        height: 20px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #94a3b8;
+        opacity: 0.7;
+        transition: all 0.15s ease;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        flex-shrink: 0;
+        padding: 0;
+        margin-left: auto;
+      }
+
+      .tab-item:hover .tab-close,
+      .tab-item.active .tab-close {
+        opacity: 0.9;
+      }
+
+      .tab-close:hover {
+        opacity: 1 !important;
+        background: #fee2e2;
+        color: #ef4444;
+        transform: scale(1.08);
       }
 
       #webview-container {
@@ -66,7 +456,7 @@
         width: 100%;
         overflow: hidden;
         position: relative;
-        background: #fff;
+        background: #ffffff;
       }
 
       webview {
@@ -76,22 +466,6 @@
         width: 100%;
         height: 100%;
         border: none;
-      }
-
-      #record-toggle {
-        background-color: #007bff;
-        color: white;
-        border: none;
-        padding: 5px 10px;
-        cursor: pointer;
-        border-radius: 4px;
-      }
-
-      #settings-button {
-        background: none;
-        border: none;
-        font-size: 18px;
-        cursor: pointer;
       }
 
       /* === Modal Styles === */
@@ -104,42 +478,374 @@
         width: 100%;
         height: 100%;
         overflow: auto;
-        background-color: rgba(0,0,0,0.5);
+        background: rgba(15, 23, 42, 0.45);
+        backdrop-filter: blur(10px);
       }
 
       .modal-content {
-        background-color: #fff;
-        margin: 10% auto;
-        padding: 20px;
-        border: 1px solid #ccc;
-        width: 400px;
-        border-radius: 8px;
+        background-color: #ffffff;
+        margin: 6% auto;
+        padding: 34px;
+        border: 1px solid #e2e8f0;
+        width: 440px;
+        max-height: 85vh;
+        overflow-y: auto;
+        border-radius: 22px;
         position: relative;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.18);
+        animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      @keyframes modalFadeIn {
+        from { opacity: 0; transform: scale(0.96) translateY(-8px); }
+        to { opacity: 1; transform: scale(1) translateY(0); }
       }
 
       .modal-close {
         position: absolute;
-        top: 10px;
-        right: 15px;
-        font-size: 20px;
+        top: 16px;
+        right: 20px;
+        font-size: 22px;
         font-weight: bold;
+        color: #94a3b8;
         cursor: pointer;
+        transition: color 0.2s;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: #f1f5f9;
+      }
+
+      .modal-close:hover {
+        color: #0f172a;
+        background: #e2e8f0;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        color: white;
+        border: none;
+        padding: 12px 22px;
+        border-radius: 12px;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+      }
+
+      .btn-primary:hover {
+        background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45);
+      }
+
+      .btn-primary:active {
+        transform: translateY(0);
+      }
+
+      .btn-secondary {
+        background: #f1f5f9;
+        color: #334155;
+        border: 1px solid #cbd5e1;
+        padding: 8px 16px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .btn-secondary:hover {
+        background: #e2e8f0;
+        border-color: #94a3b8;
+      }
+
+      /* === Settings Modal Specific Styles === */
+      #settings-modal .modal-content {
+        width: 780px;
+        max-width: 92vw;
+        padding: 0;
+        border-radius: 24px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        margin: 5vh auto;
+        height: 610px;
+        max-height: 88vh;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.22);
+      }
+
+      .settings-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 26px;
+        background: #ffffff;
+        border-bottom: 1px solid #e2e8f0;
+        flex-shrink: 0;
+      }
+
+      .settings-header-title {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .settings-header-title h2 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 800;
+        color: #0f172a;
+        letter-spacing: -0.02em;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .settings-header-desc {
+        font-size: 12.5px;
+        color: #64748b;
+        margin-top: 2px;
+      }
+
+      .settings-layout {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+        background: #ffffff;
+      }
+
+      .settings-sidebar {
+        width: 210px;
+        background: #f8fafc;
+        border-right: 1px solid #e2e8f0;
+        padding: 16px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        flex-shrink: 0;
+      }
+
+      .settings-tab-btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: none;
+        background: transparent;
+        color: #64748b;
+        font-size: 13px;
+        font-weight: 600;
+        text-align: left;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        width: 100%;
+      }
+
+      .settings-tab-btn:hover {
+        background: #f1f5f9;
+        color: #0f172a;
+      }
+
+      .settings-tab-btn.active {
+        background: #eff6ff;
+        color: #2563eb;
+        font-weight: 700;
+      }
+
+      .settings-tab-btn svg {
+        flex-shrink: 0;
+      }
+
+      .settings-main {
+        flex: 1;
+        padding: 22px 26px;
+        overflow-y: auto;
+        background: #ffffff;
+      }
+
+      .settings-panel {
+        display: none;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .settings-panel.active {
+        display: flex;
+      }
+
+      .settings-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 16px 18px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+      }
+
+      .settings-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 6px;
+      }
+
+      .settings-card-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: #0f172a;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .settings-card-desc {
+        font-size: 12.5px;
+        color: #64748b;
+        line-height: 1.45;
+      }
+
+      .settings-status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 11.5px;
+        font-weight: 700;
+      }
+
+      .status-pill-green {
+        background: #ecfdf5;
+        color: #059669;
+        border: 1px solid #a7f3d0;
+      }
+
+      .status-pill-blue {
+        background: #eff6ff;
+        color: #2563eb;
+        border: 1px solid #bfdbfe;
+      }
+
+      .status-pill-amber {
+        background: #fffbeb;
+        color: #d97706;
+        border: 1px solid #fde68a;
+      }
+
+      .settings-input {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1.5px solid #cbd5e1;
+        border-radius: 10px;
+        font-size: 13px;
+        background: #f8fafc;
+        color: #0f172a;
+        outline: none;
+        transition: border-color 0.2s;
+        box-sizing: border-box;
+      }
+
+      .settings-input:focus {
+        border-color: #2563eb;
+        background: #ffffff;
+      }
+
+      .settings-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        background: #f1f5f9;
+        color: #334155;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        border: 1px solid #e2e8f0;
+      }
+
+      .zoom-btn-group {
+        display: flex;
+        gap: 6px;
+        margin-top: 10px;
+      }
+
+      .zoom-btn {
+        flex: 1;
+        padding: 8px 0;
+        border: 1px solid #cbd5e1;
+        background: #f8fafc;
+        border-radius: 8px;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: #475569;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+
+      .zoom-btn:hover {
+        background: #e2e8f0;
+        color: #0f172a;
+      }
+
+      .zoom-btn.active {
+        background: #2563eb;
+        color: #ffffff;
+        border-color: #2563eb;
+        font-weight: 700;
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
       }
     </style>
   </head>
   <body>
     <div id="app">
       <div id="controls">
-        <button id="back">⬅️</button>
-        <button id="forward">➡️</button>
-        <button id="refresh">🔄</button>
-        <button id="home">🏠</button>
-        <input id="address-bar" type="text" placeholder="Enter URL..." />
+        <button id="back" class="nav-btn" title="Back">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </button>
+        <button id="forward" class="nav-btn" title="Forward">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+        <button id="refresh" class="nav-btn" title="Refresh">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+        </button>
+        <button id="home" class="nav-btn" title="Class Dashboard">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </button>
+        
+        <div class="address-container">
+          <span class="address-icon" id="security-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </span>
+          <input id="address-bar" type="text" placeholder="Search web or enter address..." />
+        </div>
+        
         <button id="go">Go</button>
-        <button id="new-tab">➕</button>
-        <button id="record-toggle">Start Recording</button>
-        <button id="settings-button" title="Settings">⚙️</button>
+        <button id="new-tab">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span>New Tab</span>
+        </button>
+        
+        <div id="class-info-badge" style="display:none;">
+          <span id="active-class-text">Class: None</span>
+          <button id="switch-class-btn">Switch</button>
+        </div>
+        
+        <button id="settings-button" title="Settings">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+
+        <button id="close-browser-button" title="Close Browser (Exit Application)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          <span>Close Browser</span>
+        </button>
       </div>
+
+      <div id="loading-bar"></div>
 
       <div id="tabs"></div>
 
@@ -148,121 +854,311 @@
       </div>
     </div>
 
-    <!-- Settings Modal -->
-    <div id="settings-modal" class="modal">
-      <div class="modal-content">
-        <span id="settings-close" class="modal-close">&times;</span>
-        <h2>Settings</h2>
-        <label>
-          Timelapse Interval (seconds):
-          <input type="number" id="timelapse-interval" min="1" value="1">
-        </label>
-        <br><br>
-        <label>
-          Download Folder:
-          <input type="text" id="download-path" readonly>
-          <button id="choose-download-path">Browse</button>
-        </label>
+    <!-- Class Access Portal Gate Modal Overlay -->
+    <div id="class-gate-modal" class="modal" style="display: flex; background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(12px);">
+      <div class="modal-content" style="width: 440px; text-align: center; border-radius: 24px; padding: 36px 32px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.18); border: 1px solid #e2e8f0; margin: auto; position: relative;">
+        <!-- Cancel / Close button for returning to previous class session -->
+        <span id="class-gate-close" class="modal-close" style="display: none;" title="Cancel and stay in previous class">&times;</span>
+
+        <div style="font-size: 48px; margin-bottom: 6px;">🎓</div>
+        <h2 style="margin: 0 0 6px 0; color: #0f172a; font-size: 22px; font-weight: 800;">Class Code Access Portal</h2>
+        <p style="margin: 0 0 18px 0; color: #64748b; font-size: 14px; font-weight: 500;">Enter a Class Code to verify access with Firestore</p>
+
+        <!-- Previous Class Restore Option (when tapping switch by mistake) -->
+        <div id="previous-class-box" style="display: none; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 14px; padding: 12px 14px; margin-bottom: 16px; text-align: left;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+            <div>
+              <div style="font-size: 10.5px; font-weight: 700; color: #1d4ed8; text-transform: uppercase; letter-spacing: 0.5px;">Previous Active Class</div>
+              <div id="previous-class-label" style="font-size: 13.5px; font-weight: 700; color: #0f172a;"></div>
+            </div>
+            <button id="resume-previous-class-btn" type="button" style="background: #2563eb; color: white; border: none; border-radius: 10px; padding: 7px 14px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: background 0.15s ease;">
+              ↩ Resume Class
+            </button>
+          </div>
+        </div>
+
+        <div id="class-gate-status" style="display: none; padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 600; margin-bottom: 18px;"></div>
+
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <input type="text" id="class-code-input" placeholder="e.g. EDU101, DEMO123" style="padding: 13px; border: 2px solid #cbd5e1; border-radius: 14px; font-size: 18px; font-weight: 800; text-align: center; text-transform: uppercase; letter-spacing: 3px; outline: none; transition: all 0.2s; background: #f8fafc; color: #0f172a;" />
+          <div style="display: flex; gap: 10px;">
+            <button id="class-gate-cancel-btn" type="button" style="display: none; flex: 1; padding: 13px; font-size: 14px; font-weight: 700; border-radius: 12px; border: 1px solid #cbd5e1; background: #f8fafc; color: #475569; cursor: pointer; transition: all 0.2s ease;">
+              Cancel
+            </button>
+            <button id="class-code-submit" class="btn-primary" style="flex: 2; padding: 13px;">Join Class Portal ➔</button>
+          </div>
+        </div>
+
+        <div style="margin-top: 18px; font-size: 13px; color: #64748b;">
+          Want to test instantly? <a href="#" id="class-code-demo" style="display: inline-block; margin-top: 4px; padding: 5px 14px; background: #eff6ff; color: #2563eb; border-radius: 20px; font-weight: 700; border: 1px solid #bfdbfe; transition: all 0.2s; text-decoration: none;">Use Demo Code (EDU101)</a>
+        </div>
+
+        <div style="margin-top: 14px; border-top: 1px solid #f1f5f9; padding-top: 12px;">
+          <button id="gate-exit-browser-btn" type="button" style="background: none; border: none; color: #dc2626; font-size: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 8px; transition: all 0.15s ease;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            Close Browser Window
+          </button>
+        </div>
       </div>
     </div>
 
-    <script>
-      const tabs = document.getElementById("tabs");
-      const webviewContainer = document.getElementById("webview-container");
-      const addressBar = document.getElementById("address-bar");
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+      <div class="modal-content">
+        <!-- Settings Header -->
+        <div class="settings-header">
+          <div class="settings-header-title">
+            <h2>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              Browser Settings & Classroom Center
+            </h2>
+            <div class="settings-header-desc">Manage classroom session, safety protection, downloads, and preferences</div>
+          </div>
+          <span id="settings-close" class="modal-close" style="position: static;" title="Close Settings">&times;</span>
+        </div>
 
-      let currentTabIndex = -1;
-      const tabData = [];
+        <!-- Settings Body with Sidebar + Main -->
+        <div class="settings-layout">
+          <!-- Sidebar Nav -->
+          <div class="settings-sidebar">
+            <button class="settings-tab-btn active" data-tab="session">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+              <span>Class Session</span>
+            </button>
+            <button class="settings-tab-btn" data-tab="security">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span>Security & Safety</span>
+            </button>
+            <button class="settings-tab-btn" data-tab="storage">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              <span>Downloads & Cache</span>
+            </button>
+            <button class="settings-tab-btn" data-tab="display">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              <span>Display & Zoom</span>
+            </button>
+            <button class="settings-tab-btn" data-tab="about">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              <span>About & System</span>
+            </button>
+          </div>
 
-      function createWebview(url) {
-        webviewContainer.innerHTML = "";
-        const webview = document.createElement("webview");
-        webview.src = url;
-        webview.setAttribute("allowpopups", "true");
-        webview.setAttribute("webpreferences", "nativeWindowOpen=yes, contextIsolation=yes");
-        webview.style.width = "100%";
-        webview.style.height = "100%";
-        webviewContainer.appendChild(webview);
-        addressBar.value = url;
-      }
+          <!-- Main Content Panels -->
+          <div class="settings-main">
+            <!-- 1. Class Session Panel -->
+            <div id="settings-panel-session" class="settings-panel active">
+              <div class="settings-card">
+                <div class="settings-card-header">
+                  <span class="settings-card-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                    Active Classroom Session
+                  </span>
+                  <span id="settings-session-status-pill" class="settings-status-pill status-pill-green">● Connected</span>
+                </div>
+                <div class="settings-card-desc" style="margin-bottom: 12px;">Your browser is bound to the following active teacher class session:</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #f8fafc; padding: 12px 14px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                  <div>
+                    <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Class Name</div>
+                    <div id="settings-class-name" style="font-size: 14px; font-weight: 700; color: #0f172a; margin-top: 2px;">Loading...</div>
+                  </div>
+                  <div>
+                    <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Class Code</div>
+                    <div id="settings-class-code" style="font-size: 14px; font-weight: 800; font-family: monospace; color: #2563eb; margin-top: 2px;">---</div>
+                  </div>
+                </div>
+              </div>
 
-      function addTab(url = "https://github.com") {
-        const index = tabData.length;
-        const tabBtn = document.createElement("button");
-        tabBtn.textContent = `Tab ${index + 1}`;
-        tabBtn.addEventListener("click", () => switchTab(index));
-        tabs.appendChild(tabBtn);
-        tabData.push({ url, button: tabBtn });
-        switchTab(index);
-      }
+              <div class="settings-card">
+                <div class="settings-card-header">
+                  <span class="settings-card-title">Teacher Approved Websites</span>
+                  <span id="settings-whitelist-count" class="settings-status-pill status-pill-blue">0 Sites Allowed</span>
+                </div>
+                <div class="settings-card-desc" style="margin-bottom: 10px;">Only websites explicitly whitelisted by your teacher are accessible.</div>
+                <div id="settings-whitelist-chips" style="display: flex; flex-wrap: wrap; gap: 6px; max-height: 90px; overflow-y: auto;">
+                  <span class="settings-chip">Loading sites...</span>
+                </div>
+              </div>
 
-      function switchTab(index) {
-        currentTabIndex = index;
-        tabData.forEach((tab, i) => {
-          tab.button.classList.toggle("active", i === index);
-        });
-        createWebview(tabData[index].url);
-      }
+              <div style="display: flex; gap: 10px; margin-top: 4px;">
+                <button id="settings-switch-class-btn" class="btn-primary" style="flex: 1; padding: 11px; font-size: 13.5px;">
+                  🔄 Switch Class Code
+                </button>
+                <button id="settings-leave-class-btn" class="btn-secondary" style="padding: 11px 18px; font-size: 13px; color: #dc2626; border-color: #fecaca; background: #fef2f2;">
+                  🚪 Leave Session
+                </button>
+              </div>
+            </div>
 
-      document.getElementById("new-tab").addEventListener("click", () => addTab());
+            <!-- 2. Security & Safety Panel -->
+            <div id="settings-panel-security" class="settings-panel">
+              <div class="settings-card">
+                <div class="settings-card-header">
+                  <span class="settings-card-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    URL Filtering & Whitelist Lock
+                  </span>
+                  <span class="settings-status-pill status-pill-green">✓ Active & Enforced</span>
+                </div>
+                <div class="settings-card-desc">
+                  Students cannot navigate to unwhitelisted addresses. Non-whitelisted attempts immediately halt loading and redirect to safety warnings.
+                </div>
+              </div>
 
-      document.getElementById("go").addEventListener("click", () => {
-        const url = addressBar.value.trim();
-        if (currentTabIndex !== -1 && url) {
-          const formatted = url.startsWith("http") ? url : "https://" + url;
-          tabData[currentTabIndex].url = formatted;
-          createWebview(formatted);
-        }
-      });
+              <div class="settings-card">
+                <div class="settings-card-header">
+                  <span class="settings-card-title">Popup & External Window Shield</span>
+                  <span class="settings-status-pill status-pill-green">✓ Shield Active</span>
+                </div>
+                <div class="settings-card-desc">
+                  External popups and unauthorized window creation are intercepted and blocked at the Electron system core to prevent sandboxing leaks.
+                </div>
+              </div>
 
-      document.getElementById("back").addEventListener("click", () => {
-        const webview = webviewContainer.querySelector("webview");
-        if (webview?.canGoBack()) webview.goBack();
-      });
+              <div class="settings-card">
+                <div class="settings-card-header">
+                  <span class="settings-card-title">Cloud Database Sync (Firebase)</span>
+                  <span id="settings-cloud-status-pill" class="settings-status-pill status-pill-blue">Firestore Ready</span>
+                </div>
+                <div class="settings-card-desc" style="margin-bottom: 12px;">
+                  Realtime Firestore sync allows instant class code verification and dynamic whitelist updates.
+                </div>
+                <button id="settings-test-connection-btn" class="btn-secondary" style="width: 100%; padding: 9px; font-size: 13px;">
+                  ⚡ Test Firestore Connection
+                </button>
+                <div id="settings-connection-feedback" style="display: none; margin-top: 8px; font-size: 12px; font-weight: 600; padding: 6px 10px; border-radius: 6px;"></div>
+              </div>
+            </div>
 
-      document.getElementById("forward").addEventListener("click", () => {
-        const webview = webviewContainer.querySelector("webview");
-        if (webview?.canGoForward()) webview.goForward();
-      });
+            <!-- 3. Downloads & Storage Panel -->
+            <div id="settings-panel-storage" class="settings-panel">
+              <div class="settings-card">
+                <div class="settings-card-header">
+                  <span class="settings-card-title">Default Download Location</span>
+                </div>
+                <div class="settings-card-desc" style="margin-bottom: 10px;">
+                  Files downloaded from whitelisted educational portals will be saved to this folder:
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <input type="text" id="download-path" readonly class="settings-input" style="flex: 1; font-size: 12px;">
+                  <button id="choose-download-path" class="btn-primary" style="padding: 9px 16px; font-size: 13px; flex-shrink: 0;">Browse</button>
+                </div>
+              </div>
 
-      document.getElementById("refresh").addEventListener("click", () => {
-        const webview = webviewContainer.querySelector("webview");
-        if (webview) webview.reload();
-      });
+              <div class="settings-card">
+                <div class="settings-card-header">
+                  <span class="settings-card-title">Browsing Data & Cache</span>
+                </div>
+                <div class="settings-card-desc" style="margin-bottom: 12px;">
+                  Clear website cache, local webview cookies, and temporary data to start with a completely fresh state.
+                </div>
+                <button id="settings-clear-cache-btn" class="btn-secondary" style="color: #475569; padding: 9px 16px; font-size: 13px;">
+                  🗑️ Clear Browsing Data & Cache
+                </button>
+                <div id="settings-cache-feedback" style="display: none; margin-top: 8px; font-size: 12px; font-weight: 600; color: #059669; padding: 6px 10px; background: #ecfdf5; border-radius: 6px; border: 1px solid #a7f3d0;"></div>
+              </div>
+            </div>
 
-      document.getElementById("home").addEventListener("click", () => {
-        if (currentTabIndex !== -1) {
-          tabData[currentTabIndex].url = "https://github.com";
-          createWebview("https://github.com");
-        }
-      });
+            <!-- 4. Display & Zoom Panel -->
+            <div id="settings-panel-display" class="settings-panel">
+              <div class="settings-card">
+                <div class="settings-card-header">
+                  <span class="settings-card-title">Webview Page Zoom</span>
+                  <span id="settings-current-zoom-pill" class="settings-status-pill status-pill-blue">100%</span>
+                </div>
+                <div class="settings-card-desc">Adjust the scale of educational websites for optimal readability on classroom screens:</div>
+                <div class="zoom-btn-group">
+                  <button class="zoom-btn" data-zoom="0.8">80%</button>
+                  <button class="zoom-btn" data-zoom="0.9">90%</button>
+                  <button class="zoom-btn active" data-zoom="1.0">100%</button>
+                  <button class="zoom-btn" data-zoom="1.1">110%</button>
+                  <button class="zoom-btn" data-zoom="1.25">125%</button>
+                </div>
+              </div>
 
-      const settingsModal = document.getElementById("settings-modal");
-      const settingsButton = document.getElementById("settings-button");
-      const settingsClose = document.getElementById("settings-close");
+              <div class="settings-card">
+                <div class="settings-card-header">
+                  <span class="settings-card-title">Theme & Contrast</span>
+                  <span class="settings-status-pill status-pill-green">Academic Light Mode</span>
+                </div>
+                <div class="settings-card-desc">
+                  Optimized for daytime classroom viewing, projector screens, and high-readability text on study portals.
+                </div>
+              </div>
+            </div>
 
-      settingsButton.addEventListener("click", () => {
-        settingsModal.style.display = "block";
-      });
+            <!-- 5. About & System Panel -->
+            <div id="settings-panel-about" class="settings-panel">
+              <div class="settings-card">
+                <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 12px;">
+                  <div style="width: 44px; height: 44px; border-radius: 12px; background: #eff6ff; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 1px solid #bfdbfe;">
+                    🎓
+                  </div>
+                  <div>
+                    <div style="font-size: 16px; font-weight: 800; color: #0f172a;">Educational Browser</div>
+                    <div style="font-size: 12.5px; color: #64748b;">Secure Classroom & Exam Edition • v1.2.0</div>
+                  </div>
+                </div>
+                <div class="settings-card-desc" style="line-height: 1.55;">
+                  A sandboxed, whitelist-enforced web browser engineered for educational institutions, remote proctoring, and focused student learning environments.
+                </div>
+              </div>
 
-      settingsClose.addEventListener("click", () => {
-        settingsModal.style.display = "none";
-      });
+              <div class="settings-card">
+                <div class="settings-card-header">
+                  <span class="settings-card-title">Diagnostics & Architecture</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12.5px;">
+                  <div style="color: #64748b;">Architecture: <strong style="color: #0f172a;">Electron 25 + TypeScript</strong></div>
+                  <div style="color: #64748b;">Cloud Backend: <strong style="color: #0f172a;">Firebase Firestore</strong></div>
+                  <div style="color: #64748b;">Whitelist Engine: <strong style="color: #059669;">Active (Strict)</strong></div>
+                  <div style="color: #64748b;">Sandbox Isolation: <strong style="color: #059669;">Enforced</strong></div>
+                </div>
+              </div>
 
-      window.addEventListener("click", (e) => {
-        if (e.target === settingsModal) {
-          settingsModal.style.display = "none";
-        }
-      });
+              <div class="settings-card" style="border-color: #fecaca; background: #fffbfb;">
+                <div class="settings-card-header">
+                  <span class="settings-card-title" style="color: #dc2626;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    Close Application
+                  </span>
+                </div>
+                <div class="settings-card-desc" style="margin-bottom: 12px;">
+                  Safely quit the browser and terminate the classroom session.
+                </div>
+                <button id="settings-close-app-btn" class="btn-secondary" style="width: 100%; padding: 10px; font-size: 13px; color: #dc2626; border-color: #fca5a5; background: #fef2f2; font-weight: 700; cursor: pointer;">
+                  🚪 Exit & Close Browser
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-      document.getElementById("record-toggle").addEventListener("click", () => {
-        const btn = document.getElementById("record-toggle");
-        if (btn.textContent.includes("Start")) {
-          btn.textContent = "Stop Recording";
-        } else {
-          btn.textContent = "Start Recording";
-        }
-      });
-    </script>
+    <!-- Access Denied / Restricted Site Warning Modal -->
+    <div id="restricted-warning-modal" class="modal" style="display: none; background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(12px); z-index: 9999;">
+      <div class="modal-content" style="max-width: 480px; text-align: center; border-radius: 24px; padding: 38px 30px; border: 1.5px solid #fecaca; box-shadow: 0 25px 50px rgba(239, 68, 68, 0.15); margin: auto;">
+        <div style="font-size: 56px; margin-bottom: 12px;">⛔</div>
+        <h2 style="margin: 0 0 10px 0; color: #dc2626; font-size: 22px; font-weight: 800;">Access Restricted!</h2>
+        <p style="margin: 0 0 16px 0; color: #475569; font-size: 14px; line-height: 1.5; font-weight: 500;">
+          The website you tried to visit is <strong>NOT allowed</strong> for your active class session.
+        </p>
+        
+        <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 14px; margin-bottom: 20px; text-align: left;">
+          <div style="font-size: 11px; font-weight: 700; color: #991b1b; text-transform: uppercase; margin-bottom: 4px;">Blocked Destination:</div>
+          <div id="warning-blocked-url" style="font-size: 13px; font-weight: 700; color: #b91c1c; word-break: break-all;"></div>
+          <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-top: 10px; margin-bottom: 4px;">Active Class:</div>
+          <div id="warning-active-class" style="font-size: 13px; font-weight: 700; color: #0284c7;"></div>
+        </div>
+
+        <p style="font-size: 13px; color: #64748b; margin-bottom: 20px;">
+          Only websites explicitly whitelisted by your teacher are accessible in this browser.
+        </p>
+
+        <button id="warning-return-home-btn" class="btn-primary" style="width: 100%; padding: 14px; font-size: 15px; font-weight: 700; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+          Return to Class Dashboard ➔
+        </button>
+      </div>
+    </div>
   </body>
 </html>
